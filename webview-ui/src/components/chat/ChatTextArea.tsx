@@ -420,6 +420,25 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			[updateCursorPosition]
 		)
 
+		const handleDrop = useCallback(
+			(event: React.DragEvent<HTMLTextAreaElement>) => {
+				event.preventDefault()
+				const files = event.dataTransfer.files
+				if (files.length > 0) {
+					const filePaths = Array.from(files).map((file) => file.path)
+					const newValue = inputValue + " " + filePaths.join(" ")
+					setInputValue(newValue)
+					setCursorPosition(newValue.length)
+					setIntendedCursorPosition(newValue.length)
+				}
+			},
+			[inputValue, setInputValue]
+		)
+
+		const handleDragOver = useCallback((event: React.DragEvent<HTMLTextAreaElement>) => {
+			event.preventDefault()
+		}, [])
+
 		return (
 			<div
 				style={{
@@ -541,6 +560,8 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						zIndex: 1,
 					}}
 					onScroll={() => updateHighlights()}
+					onDrop={handleDrop}
+					onDragOver={handleDragOver}
 				/>
 				{selectedImages.length > 0 && (
 					<Thumbnails

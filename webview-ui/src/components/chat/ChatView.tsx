@@ -13,7 +13,6 @@ import {
 } from "../../../../src/shared/ExtensionMessage"
 import { findLast } from "../../../../src/shared/array"
 import { combineApiRequests } from "../../../../src/shared/combineApiRequests"
-import { combineCommandSequences } from "../../../../src/shared/combineCommandSequences"
 import { getApiMetrics } from "../../../../src/shared/getApiMetrics"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
@@ -674,6 +673,24 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		[expandedRows, modifiedMessages, groupedMessages.length, toggleRowExpansion, handleRowHeightChange]
 	)
 
+	const handleDrop = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			event.preventDefault()
+			const files = event.dataTransfer.files
+			if (files.length > 0) {
+				const filePaths = Array.from(files).map((file) => file.path)
+				const newValue = inputValue + " " + filePaths.join(" ")
+				setInputValue(newValue)
+				textAreaRef.current?.focus()
+			}
+		},
+		[inputValue]
+	)
+
+	const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault()
+	}, [])
+
 	return (
 		<div
 			style={{
@@ -685,7 +702,11 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				display: isHidden ? "none" : "flex",
 				flexDirection: "column",
 				overflow: "hidden",
-			}}>
+				// P187d
+				// Peaf1
+			}}
+			onDrop={handleDrop}
+			onDragOver={handleDragOver}>
 			{task ? (
 				<TaskHeader
 					task={task}

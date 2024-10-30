@@ -2158,4 +2158,13 @@ export class Cline {
 
 		return `<environment_details>\n${details.trim()}\n</environment_details>`
 	}
+
+	async processDroppedFilePaths(filePaths: string[]): Promise<void> {
+		const userContent: UserContent = filePaths.map((filePath) => ({
+			type: "text",
+			text: `<file_path>\n${filePath}\n</file_path>`,
+		}))
+
+		await this.initiateTaskLoop(userContent)
+	}
 }
